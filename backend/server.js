@@ -1,21 +1,41 @@
+import "./config/env.js";
 import express from "express";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 import cors from "cors";
 
-dotenv.config();
+import authRoutes from "./routes/authRoutes.js";
+import resumeRoutes from "./routes/resumeRoutes.js";
+import { protect } from "./middleware/authMiddleware.js";
+
+
 const app = express();
+const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
 
+app.use((req, res, next) => {
+  console.log("➡️ Incoming:", req.method, req.originalUrl);
+  next();
+});
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
+app.use("/api/auth", authRoutes);
+app.use("/api/resume", resumeRoutes);
+app.get("/api/test", protect, (req, res) => {
+  res.json({
+    message: "JWT working",
+    userId: req.user.id
+  });
+});
+
+
+
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB connected");
-    app.listen(5000, () => console.log("Server running on port 5000"));
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   })
   .catch(err => console.error(err));
