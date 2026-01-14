@@ -12,7 +12,7 @@ export default function Dashboard() {
         <h2 className="text-2xl font-semibold mb-4">Dashboard</h2>
 
         <p className="mb-6">
-          Welcome, <b>{user?.name}</b>
+          Welcome, {user?.name}
         </p>
 
         <button
@@ -20,6 +20,12 @@ export default function Dashboard() {
           onClick={() => navigate("/generate")}
         >
           Generate Questions
+        </button>
+        <button
+          className="w-full bg-gray-700 text-white py-2 rounded mb-3"
+          onClick={() => navigate("/history")}
+        >
+          View History
         </button>
 
         <button

@@ -42,3 +42,47 @@ export const generateQuestions = async (req, res) => {
     res.status(500).json({ message: "Failed to generate questions" });
   }
 };
+
+export const getHistoryByResume = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const resumes = await Resume.find({ userId })
+      .select("fileName uploadedAt");
+
+    const history = await Promise.all(
+      resumes.map(async (resume) => {
+        const count = await QuestionSet.countDocuments({
+          userId,
+          resumeId: resume._id
+        });
+
+        return {
+          resumeId: resume._id,
+          fileName: resume.fileName,
+          uploadedAt: resume.uploadedAt,
+          questionSets: count
+        };
+      })
+    );
+
+    res.json(history);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to load history" });
+  }
+};
+
+export const getQuestionsByResume = async (req, res) => {
+  try {
+    const { resumeId } = req.params;
+
+    const data = await QuestionSet.find({
+      userId: req.user.id,
+      resumeId
+    }).sort({ createdAt: -1 });
+
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to load questions" });
+  }
+};
