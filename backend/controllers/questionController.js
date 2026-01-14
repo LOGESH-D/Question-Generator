@@ -1,5 +1,5 @@
-import Resume from "../models/Resume.js";
 import QuestionSet from "../models/QuestionSet.js";
+import Resume from "../models/Resume.js";
 import { generateQuestionsFromResume } from "../utils/aiServices.js";
 
 export const generateQuestions = async (req, res) => {
@@ -11,8 +11,16 @@ export const generateQuestions = async (req, res) => {
       return res.status(404).json({ message: "Resume not found" });
     }
 
-    const questions = await generateQuestionsFromResume(
-      resume.resumeText,
+    const resumeText = resume.resumeText;
+
+    if (typeof resumeText !== "string" || resumeText.trim().length < 50) {
+      return res.status(400).json({
+        message: "Resume text is missing or unreadable. Please re-upload the resume."
+      });
+    }
+
+    const aiResult = await generateQuestionsFromResume(
+      resumeText,
       level
     );
 
@@ -20,10 +28,15 @@ export const generateQuestions = async (req, res) => {
       userId: req.user.id,
       resumeId,
       level,
-      questions
+      questions: aiResult.questions
     });
 
-    res.status(201).json(questionSet);
+    res.json({
+      message: "Questions generated successfully",
+      questions: questionSet.questions,
+      questionSetId: questionSet._id
+    });
+
   } catch (error) {
     console.error("Question generation error:", error);
     res.status(500).json({ message: "Failed to generate questions" });
