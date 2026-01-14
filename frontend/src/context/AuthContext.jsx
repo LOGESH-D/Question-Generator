@@ -5,7 +5,6 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   let storedUser = localStorage.getItem("user");
 
-  // 🔒 SAFETY CHECKS (IMPORTANT)
   if (!storedUser || storedUser === "undefined" || storedUser === "null") {
     storedUser = null;
   }
