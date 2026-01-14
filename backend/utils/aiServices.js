@@ -6,30 +6,59 @@ const groq = new Groq({
 
 export const generateQuestionsFromResume = async (resumeText, level) => {
   const prompt = `
-SYSTEM:
-You are a JSON API. You must return ONLY valid JSON.
-Do not explain. Do not add text.
+SYSTEM ROLE:
+You are a senior technical interviewer at a product-based company.
+You conduct realistic, in-depth technical interviews.
 
 TASK:
-Based strictly on the resume below, generate exactly 10 ${level}-level interview questions.
+Based STRICTLY on the resume content below, generate EXACTLY 10 ${level}-level
+interview questions with ideal answers.
 
-Resume content:
+RESUME:
 """
 ${resumeText}
 """
 
-Each item MUST contain:
-- question
-- idealAnswer
-- basedOn (skill, project, or experience from resume)
+INTERVIEW RULES (VERY IMPORTANT):
+- Analyze the resume first to identify:
+  - Technical skills
+  - Projects
+  - Internships / experience
+  - Tools, technologies, and domains
+- Generate questions ONLY from what exists in the resume
+- Do NOT assume or introduce new skills
+- Avoid generic or HR-style questions
+- Questions must feel like real interview questions
 
-Return ONLY this JSON format:
+QUESTION QUALITY:
+- Ask "HOW", "WHY", and "WHAT IF" questions
+- Prefer scenario-based and project-deep-dive questions
+- Include debugging, design, and trade-off questions where applicable
+- Questions should test:
+  - Practical understanding
+  - Decision-making
+  - Real-world usage
+  - Edge cases and limitations
+
+DIFFICULTY HANDLING:
+- easy → basic understanding and usage
+- medium → internals, reasoning, and architecture
+- hard → optimization, scalability, edge cases, and design trade-offs
+
+ANSWER RULES:
+- Ideal answers must be technical and specific
+- Mention reasoning, approaches, and best practices
+- Avoid vague or generic explanations
+
+OUTPUT FORMAT (STRICT):
+Return ONLY valid JSON. No explanations. No extra text.
+
 {
   "questions": [
     {
-      "question": "",
-      "idealAnswer": "",
-      "basedOn": ""
+      "question": "string",
+      "idealAnswer": "string",
+      "basedOn": "specific skill, project, or experience from resume"
     }
   ]
 }
