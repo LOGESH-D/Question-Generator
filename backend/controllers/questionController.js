@@ -1,8 +1,8 @@
 import Resume from "../models/Resume.js";
 import QuestionSet from "../models/QuestionSet.js";
-import { generateQuestions } from "../utils/ai.js";
+import { generateQuestionsFromResume } from "../utils/aiServices.js";
 
-export const generateQuestionsFromResume = async (req, res) => {
+export const generateQuestions = async (req, res) => {
   try {
     const { resumeId, level } = req.body;
 
@@ -11,17 +11,21 @@ export const generateQuestionsFromResume = async (req, res) => {
       return res.status(404).json({ message: "Resume not found" });
     }
 
-    const questions = await generateQuestions(resume.resumeText, level);
+    const questions = await generateQuestionsFromResume(
+      resume.resumeText,
+      level
+    );
 
     const questionSet = await QuestionSet.create({
       userId: req.user.id,
-      resumeId: resume._id,
+      resumeId,
       level,
       questions
     });
 
-    res.json(questionSet);
+    res.status(201).json(questionSet);
   } catch (error) {
-    res.status(500).json({ message: "Question generation failed" });
+    console.error("Question generation error:", error);
+    res.status(500).json({ message: "Failed to generate questions" });
   }
 };

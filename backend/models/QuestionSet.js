@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const questionSchema = new mongoose.Schema({
+const qaSchema = new mongoose.Schema({
   question: String,
   idealAnswer: String,
   basedOn: String
@@ -9,14 +9,20 @@ const questionSchema = new mongoose.Schema({
 const questionSetSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
+    ref: "User",
+    required: true
   },
   resumeId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Resume"
+    ref: "Resume",
+    required: true
   },
-  level: String,
-  questions: [questionSchema],
+  level: {
+    type: String,
+    enum: ["easy", "medium", "hard"],
+    required: true
+  },
+  questions: [qaSchema],
   createdAt: {
     type: Date,
     default: Date.now

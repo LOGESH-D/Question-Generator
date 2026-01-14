@@ -6,6 +6,8 @@ import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import resumeRoutes from "./routes/resumeRoutes.js";
 import { protect } from "./middleware/authMiddleware.js";
+import questionRoutes from "./routes/questionRoutes.js";
+
 
 
 const app = express();
@@ -15,7 +17,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use((req, res, next) => {
-  console.log("➡️ Incoming:", req.method, req.originalUrl);
+  console.log("Incoming:", req.method, req.originalUrl);
   next();
 });
 app.get("/", (req, res) => {
@@ -30,6 +32,7 @@ app.get("/api/test", protect, (req, res) => {
     userId: req.user.id
   });
 });
+app.use("/api/questions", questionRoutes);
 
 
 
